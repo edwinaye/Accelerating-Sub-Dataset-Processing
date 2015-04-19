@@ -141,8 +141,16 @@ public class MetaServer implements Cloneable{
 		}
 		Arrays.sort(globalMap);
 		
-		// for(int i =0; i < globalMap.length;i++)	
-		//	System.out.println(globalMap[i].fileName+"---"+globalMap[i].partitionID+"---"+ globalMap[i].quantity);
+		 for(int i =0; i < globalMap.length;i++)	
+			System.out.println(globalMap[i].fileName+"---"+globalMap[i].partitionID+"---"+ globalMap[i].quantity);
+	}
+
+	
+	public void sortDistribution(String movie){
+		for(int i =0; i < globalMap.length; i++) {
+			globalMap[i].quantity = globalMap[i].lookup(movie);
+		}
+		Arrays.sort(globalMap);
 	}
 	
 	public int distanceLookup(String movie){
