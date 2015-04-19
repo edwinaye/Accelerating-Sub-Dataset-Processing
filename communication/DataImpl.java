@@ -19,16 +19,33 @@ public class DataImpl extends UnicastRemoteObject implements Data, Serializable 
 	public DistributionScheduler ds;
 	public String movieID; 
 	public String scheChoice;
+	public HashMap<String, double[]> res;
 
 	public DataImpl() throws RemoteException {
+	
 	}
 	
 	@Override
-	public LinkedList<String> getAssign(String hostid, String flag) throws RemoteException {
-		if(flag.equals("0"))
-			return ds.claspAssignment.get(hostid);
-		else
-			return ds.defaultAssignment.get(hostid);
+	public void clearResults() throws RemoteException {
+			res = new HashMap<String, double[]>();
+	}
+	public int checkResults() throws RemoteException {
+		return res.size();
+	}
+
+	
+	public HashMap<String, double[]> getResults() throws RemoteException {
+		return res;
+	}
+	
+	@Override
+	public void checkOut(String id, double[] results) throws RemoteException {
+		res.put(id, results);
+	}
+	
+	@Override
+	public LinkedList<String> getAssign(String hostid) throws RemoteException {
+			return ds.assignment.get(hostid);
 	}
 
     	@Override 
@@ -41,16 +58,8 @@ public class DataImpl extends UnicastRemoteObject implements Data, Serializable 
 		return scheChoice;
 	}	
 
-	@Override
-	public void sayHello(String name) throws RemoteException {
-        	for(int i =0; i < 100000; i++)
-			System.out.println("hello from "+ name + " i= "+ i);
-
-    	}
-
 	@Override     
 	public int taskExe(LinkedList<String> files, String movie) throws Exception{
-		//String path = file;
 		int count =0;
 		Configuration conf = new Configuration();
 		Path coreSitePath = new Path(System.getenv("HADOOP_HOME"), "conf/core-site.xml");

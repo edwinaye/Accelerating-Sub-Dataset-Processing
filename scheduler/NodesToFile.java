@@ -8,7 +8,7 @@ public class NodesToFile{
 	HashMap<String, PriorityQueue<FileQuantity>> map;
 	HashMap<String, LinkedList<String>> localMap; 
 
-	LinkedList<String> computers;
+	public LinkedList<String> computers;
 	
 	public void buildComputers(String file){
 		computers = new LinkedList<String>();
