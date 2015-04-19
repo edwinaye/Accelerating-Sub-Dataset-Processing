@@ -25,12 +25,24 @@ public class Client {
 		Path coreSitePath = new Path(System.getenv("HADOOP_HOME"), "conf/core-site.xml");
 		conf.addResource(coreSitePath);	
 		FileSystem hdfs = FileSystem.get(conf);	
-			
+		
 		long assiTime = System.currentTimeMillis();
 		Data impl = (Data) myRegistry.lookup("myMessage");		
-		String choice = impl.readSearch();
-		LinkedList<String> taskList = new LinkedList<String>(impl.getAssign(id, choice));
-		String movieID = impl.readTask();
+		//String choice = impl.readSearch();
+
+/*
+	  	 while(true){
+			String movieID = null;			
+			while(true){
+				movieID = impl.readTask();
+				for(int i =0; i < 100; i++) ;
+				if( movieID.equals(last)) continue;
+				else break;
+		}
+			
+*/		
+		String	movieID = impl.readTask();
+		LinkedList<String> taskList = new LinkedList<String>(impl.getAssign(id));
 					
 		long mapTime = System.currentTimeMillis();		
 		LinkedList<String> subsets = new ClientMapper().mapper(hdfs, taskList, movieID);
@@ -42,9 +54,17 @@ public class Client {
 		new WriteToHDFS().writeback(score, subsets, hdfs, movieID, id);
 	
 		long it = assiTime - initTime, at = mapTime-assiTime, mt = reduceTime-mapTime, rt = networkTime - reduceTime;
-		long wt = System.currentTimeMillis()-networkTime; 	
-		String statistic = id + " maps= "+taskList.size()+" wl= " + subsets.size() + " it= " + it + " mt= " + at + " rt= " +mt+ " nt= " +rt + " wt " + wt+"\n";
+		long wt = System.currentTimeMillis()-networkTime; 
+		long all = System.currentTimeMillis()-initTime;
+
+		double[] res = {taskList.size(), subsets.size(), it, at, mt, rt, wt, all};
+
+		impl.checkOut(id, res);
+
+	      String statistic = id + " maps= "+taskList.size()+" wl= " + subsets.size() + " it= " + it + " at= " + at + " mt= " +mt+ " rt= " +rt + " wt " + wt+"\n";
 		System.out.println(statistic);
+		//last = movieID;
+	   
 
         } catch (Exception e) {
             e.printStackTrace();
